@@ -1,3 +1,39 @@
 port = 4029
+daemon = false
 db_path = "./data.db"
-server_url = "http://172.17.100.152/wcm"
+post_server_url = "https://develop.xinlantech.cn/zscmscore"
+
+# paper
+paper_server_url = "http://172.17.100.152/wcm"
+get_paper_articles_interval = 60
+site_id = 111
+docstatus = 36
+
+# tv
+tv_server_url = "http://172.16.30.10:9082/news-adapter/rest"
+tv_columnid = "590f6b165afa45f1bd8fc1ed31756fb7"
+
+# timestamp extra
+timestamp_extra = 1665 # 27 * 60 + 45
+
+# mch
+mah_token_server_url = "http://172.16.34.60:30089"
+mah_client_id = "zcsmwages"
+mah_client_secret= "b79dcbd53aea46e3acc7887aae72f5f0"
+mah_username = "sobey01"
+
+grant_type = "client_credentials_ue"
+
+# mah_client_id = "rmtcb"
+# mah_client_secret= "f96c1ccae46f4fba9f4c1c4eefcb1047"
+
+loop_token_interval = 60 # seconds
+mah_search_server_url = "http://172.16.34.60/scmss"
+search_char_at_least = 5
+
+mah_content_server_url = "http://172.16.34.60/scntm"
+
+
+loop_tv_url_interval = 3600 # seconds
+loop_tv_utl_year = 2025
+loop_tv_utl_month = 12
