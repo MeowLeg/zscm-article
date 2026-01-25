@@ -58,6 +58,14 @@ struct MaterialInfo {
     file_paths: Vec<String>,
 }
 
+fn title_refactor(title: &str) -> Result<String> {
+    use regex::Regex;
+    let reg = Regex::new("（.*?）")?;
+    let new_title = reg.replace_all(&title, " ");
+    let trim_new_title = new_title.trim().to_string();
+    Ok(trim_new_title)
+}
+
 async fn search_article(
     // prms: &SearchMaterialReq,
     title: &str,
@@ -81,7 +89,7 @@ async fn search_article(
             "pageSize": page_size,
             "personId": "",
             "keywords": [
-                title,
+                title_refactor(title)?,
             ],
             "facetConditions": [],
             "conditions": [],
