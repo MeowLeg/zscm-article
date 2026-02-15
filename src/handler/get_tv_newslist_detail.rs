@@ -54,8 +54,10 @@ pub fn get_tv_newslist_docids(resp: &Value) -> Vec<(u64, u64)> {
     if let Some(list) = resp["list"].as_object() {
         if let Some(parent_list) = list["parentList"].as_array() {
             for item in parent_list {
-                if let Some(reldocid) = item["pgmmaster"]["reldocid"].as_u64()
-                    && reldocid != 0
+                // if let Some(reldocid) = item["pgmmaster"]["reldocid"].as_u64()
+                //     && reldocid != 0
+                if let Some(docid) = item["llistno"]["docid"].as_u64()
+                    && docid != 0
                 {
                     // 未被删除
                     if let Some(deleteflag) = item["doc"]["deleteflag"].as_i64()
@@ -65,8 +67,11 @@ pub fn get_tv_newslist_docids(resp: &Value) -> Vec<(u64, u64)> {
                             && materialguid != ""
                         {
                             if let Some(video_time) = item["videoTime"].as_str() {
-                                docids.push((reldocid, video_time_to_u64(video_time)));
+                                // docids.push((reldocid, video_time_to_u64(video_time)));
+                                docids.push((docid, video_time_to_u64(video_time)));
                             }
+                        } else {
+                            docids.push((docid, 0));
                         }
                     }
                 }

@@ -43,34 +43,36 @@ impl ExecSql<PostTvArticlesReq> for PostTvArticles {
                             for id_inf in ids.into_iter() {
                                 match get_tv_article(&cfg.tv_server_url, id_inf.0).await {
                                     Ok(mut article) => {
-                                        article.video_time = id_inf.1;
-                                        article.show_date_str = String::from(showdates[0]);
-                                        // println!("{:?}", &article);
-                                        match post_tv_article(
-                                            &cfg.post_server_url,
-                                            &article,
-                                            site_id,
-                                        )
-                                        .await
-                                        {
-                                            Ok(a_id) => {
-                                                match post_tv_score(
-                                                    &cfg.post_server_url,
-                                                    a_id,
-                                                    &article,
-                                                )
-                                                .await
-                                                {
-                                                    Ok(()) => {
-                                                        println!("post_tv_score Success");
-                                                    }
-                                                    Err(e) => {
-                                                        println!("post_tv_score Error: {}", e);
+                                        if filter_title(&article.title, &cfg.filter_words)? {
+                                            article.video_time = id_inf.1;
+                                            article.show_date_str = String::from(showdates[0]);
+                                            // println!("{:?}", &article);
+                                            match post_tv_article(
+                                                &cfg.post_server_url,
+                                                &article,
+                                                site_id,
+                                            )
+                                            .await
+                                            {
+                                                Ok(a_id) => {
+                                                    match post_tv_score(
+                                                        &cfg.post_server_url,
+                                                        a_id,
+                                                        &article,
+                                                    )
+                                                    .await
+                                                    {
+                                                        Ok(()) => {
+                                                            println!("post_tv_score Success");
+                                                        }
+                                                        Err(e) => {
+                                                            println!("post_tv_score Error: {}", e);
+                                                        }
                                                     }
                                                 }
-                                            }
-                                            Err(e) => {
-                                                println!("post_tv_article Error: {}", e);
+                                                Err(e) => {
+                                                    println!("post_tv_article Error: {}", e);
+                                                }
                                             }
                                         }
                                     }
@@ -97,4 +99,14 @@ impl ExecSql<PostTvArticlesReq> for PostTvArticles {
             "data": {},
         })))
     }
+}
+
+fn filter_title(title: &str, filter_words: &[String]) -> Result<bool> {
+    for word in filter_words {
+        let reg = Regex::new(word)?;
+        if reg.is_match(title) {
+            return Ok(false);
+        }
+    }
+    Ok(true)
 }

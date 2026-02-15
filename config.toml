@@ -7,7 +7,7 @@ post_server_url = "https://develop.xinlantech.cn/zscmscore"
 paper_server_url = "http://172.17.100.152/wcm"
 get_paper_articles_interval = 60
 site_id = 111
-docstatus = 36
+docstatus = 38 # 36上版 37撤版 38见报 39组版
 
 # tv
 tv_server_url = "http://172.16.30.10:9082/news-adapter/rest"
@@ -35,5 +35,8 @@ mah_content_server_url = "http://172.16.34.60/scntm"
 
 
 loop_tv_url_interval = 3600 # seconds
-loop_tv_utl_year = 2025
-loop_tv_utl_month = 12
+loop_tv_url_year = 2025
+loop_tv_url_month = 12
+
+# 过滤词
+filter_words = ['^广告', '^提示词', '^新闻片头', '^提示语', '^提要', '^气象结束', '^审核意见', '^片尾']

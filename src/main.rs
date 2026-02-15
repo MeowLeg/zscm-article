@@ -55,6 +55,7 @@ pub struct Config {
     pub loop_tv_url_interval: u64,
     pub loop_tv_url_year: Option<u32>,
     pub loop_tv_url_month: Option<u32>,
+    pub filter_words: Vec<String>,
 }
 
 pub fn read_from_toml(f: &str) -> Result<Config> {
@@ -94,8 +95,14 @@ async fn main() -> Result<()> {
 
     let app = Router::new()
         .route("/", get(async || "hello, ascm article!".to_string()))
-        // .route("/get_paper_articles", get(get_paper_articles::GetArticles::handle_get))
-        // .route("/get_paper_article_detail", get(get_paper_article_detail::GetArticleDetail::handle_get))
+        .route(
+            "/get_paper_articles",
+            get(get_paper_articles::GetArticles::handle_get),
+        )
+        .route(
+            "/get_paper_article_detail",
+            get(get_paper_article_detail::GetArticleDetail::handle_get),
+        )
         .route(
             "/get_tv_newslists",
             get(get_tv_newslists::GetTvNewsLists::handle_get),

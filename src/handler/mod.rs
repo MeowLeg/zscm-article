@@ -1,5 +1,7 @@
 use super::*;
 use chrono::Duration as ChDuration;
+use regex::Regex;
+use scraper::{Html, Selector};
 use std::collections::HashMap;
 use std::time::{SystemTime, UNIX_EPOCH};
 use tokio::time::{Duration, sleep};
@@ -184,6 +186,7 @@ pub async fn post_tv_score(
     for code in article
         .author_codes
         .clone()
+        .unwrap_or("".into())
         .trim_matches(',')
         .split(',')
         .collect::<Vec<&str>>()
@@ -205,13 +208,15 @@ pub async fn post_tv_score(
         .into_iter()
     {
         reporters.push(json!({
-            "ref_code": Some(code),
+            "reporter_id": null,
+            "reporter_name": null,
             "reporter_category_id": 4,
+            "ref_code": Some(code),
             "score": 0
         }));
     }
     let resp = reqwest::Client::new()
-        .post(format!("{}/score", svr_url))
+        .post(format!("{}/score_for_dump", svr_url))
         .json(&json!({
             "article_id": article_id,
             "score_basic": 0,
@@ -231,6 +236,8 @@ pub async fn post_tv_score(
             Err(anyhow!("score tv article failed, {}", j.err_msg))
         }
     } else {
+        let txt = resp.text().await?;
+        println!("txt is {}", &txt);
         Err(anyhow!("score tv article failed"))
     }
 }
@@ -260,6 +267,15 @@ pub async fn post_paper_article(
     ]);
 
     let publish_date_elements = article.pubdate.split("-").collect::<Vec<_>>();
+    let page_meta_id = paper_meta.get(&article.chnldesc).unwrap_or(&0);
+    let paper_url = get_article_pdf(
+        publish_date_elements[0],
+        publish_date_elements[1],
+        publish_date_elements[2],
+        *page_meta_id as usize,
+    )
+    .await
+    .unwrap_or("".into());
     let resp = reqwest::Client::new()
         .post(format!("{}/article_from_dump", svr_url))
         .json(&json!({
@@ -268,8 +284,9 @@ pub async fn post_paper_article(
             "publish_year": publish_date_elements[0].parse::<i32>()?,
             "publish_month": publish_date_elements[1].parse::<i32>()?,
             "publish_day": publish_date_elements[2].parse::<i32>()?,
-            "tv_url": "",
-            "page_meta_id": paper_meta.get(&article.chnldesc).unwrap_or(&0),
+            // "tv_url": "",
+            "tv_url": paper_url, // 报纸版面的pdf文件
+            "page_meta_id": page_meta_id,
             "page_name": &article.chnldesc,
             "state": 1,
             // --
@@ -328,4 +345,30 @@ pub async fn post_paper_score(
     } else {
         Err(anyhow!("score tv article failed"))
     }
+}
+
+async fn get_article_pdf(
+    year: &str,
+    month: &str,
+    day: &str,
+    page_meta_id: usize,
+) -> Result<String> {
+    let url = format!(
+        "https://epaper.wifizs.cn/zsrb/{}-{}/{}/node_{}.html",
+        year, month, day, page_meta_id
+    );
+    let resp = reqwest::get(url).await?;
+    let txt = resp.text().await?;
+    let html = Html::parse_document(&txt);
+    let selector = Selector::parse("a.pdf").unwrap();
+    for (index, element) in html.select(&selector).into_iter().enumerate() {
+        if index == page_meta_id - 1 {
+            let href = match element.value().attr("href") {
+                Some(t) => t.to_string(),
+                None => return Err(anyhow!("invalid response")),
+            };
+            return Ok(href);
+        }
+    }
+    Err(anyhow!("invalid response"))
 }

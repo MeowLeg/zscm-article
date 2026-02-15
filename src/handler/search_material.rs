@@ -59,7 +59,6 @@ struct MaterialInfo {
 }
 
 fn title_refactor(title: &str) -> Result<String> {
-    use regex::Regex;
     let reg = Regex::new("（.*?）")?;
     let new_title = reg.replace_all(&title, " ");
     let trim_new_title = new_title.trim().to_string();

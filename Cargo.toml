@@ -20,6 +20,7 @@ chrono = "*"
 base64 = "*"
 percent-encoding = "*"
 regex = { version = "1.10", default-features = false, features = ["std", "unicode"] }
+scraper = "0.18"
 
 [dev-dependencies]
 sqlx = { version = "0.6", features = [

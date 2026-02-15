@@ -14,9 +14,9 @@ pub struct ArticleDetail {
     pub content: String,
     #[serde(rename = "htmlcontext")]
     pub html_content: String,
-    pub author: String,
+    pub author: Option<String>,
     #[serde(rename = "authorcode")]
-    pub author_codes: String,
+    pub author_codes: Option<String>,
     #[serde(rename = "photoperson")]
     pub photo_person: Option<String>,
     #[serde(rename = "photopersoncode")]
