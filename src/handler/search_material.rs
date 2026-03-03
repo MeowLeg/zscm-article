@@ -211,10 +211,17 @@ pub async fn loop_get_tv_url(
         let year = year.unwrap_or(ts[0].parse().unwrap_or(0));
         let month = month.unwrap_or(ts[1].parse().unwrap_or(0));
         let artiles_url = format!(
-            "{}/get_articles?page=1&limit=20&tv_url=&tv_or_paper=0,1&year={}&month={}",
+            // "{}/get_articles?page=1&limit=20&tv_url=&tv_or_paper=0,1&year={}&month={}",
+            "{}/get_articles?page=1&limit=20&tv_url=&tv_or_paper=0&year={}&month={}",
             &post_server_url, year, month
         );
-        let resp = reqwest::get(artiles_url).await?;
+        // let resp = reqwest::get(artiles_url).await?;
+        let resp = reqwest::Client::builder()
+            .build()?
+            .get(artiles_url)
+            .header("account", "admin")
+            .send()
+            .await?;
         println!("loop article resp is {:?}", &resp);
         let token = {
             let tk = Arc::clone(&token);
