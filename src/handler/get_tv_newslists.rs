@@ -62,7 +62,7 @@ pub async fn get_tv_newslists(
     let start_time = start_time.unwrap_or(format!("{}%2000:00:00", &cur_date));
     let end_time = end_time.unwrap_or(format!("{}%2000:00:00", &tomorrow));
     let url = format!(
-        "{}/s/llist/getLlistByconditionsQuery?columnid={}&startTime={}&endTime={}",
+        "{}/s/llist/getLlistByconditionsQuery?columnid={}&startTime={} 000:00:00&endTime={} 000:00:00",
         server_url, colummnid, start_time, end_time
     );
     println!("url: {}", &url);

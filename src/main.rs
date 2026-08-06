@@ -115,7 +115,7 @@ async fn main() -> Result<()> {
         //     "/get_mah_token",
         //     get(get_mah_token::GetMahToken::handle_get),
         // )
-        // .route("/get_tv_article", get(get_tv_article::GetTvArticle::handle_get))
+        .route("/get_tv_article", get(get_tv_article::GetTvArticle::handle_get))
         .route(
             "/postPaperArticles",
             get(post_paper_articles::PostPaperArticles::handle_get),
